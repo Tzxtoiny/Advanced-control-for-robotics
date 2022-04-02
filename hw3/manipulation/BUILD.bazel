@@ -1,0 +1,107 @@
+# -*- mode: python -*-
+# vi: set ft=python :
+
+# Copyright 2020-2021 Massachusetts Institute of Technology.
+# Licensed under the BSD 3-Clause License. See LICENSE.TXT for details.
+
+load("//htmlbook/tools/python:defs.bzl", "rt_py_library", "rt_py_test")
+
+rt_py_library(
+    name = "manipulation",
+    srcs = [
+        "__init__.py",
+        "meshcat_cpp_utils.py",
+        "utils.py",
+    ],
+    imports = [".."],
+    visibility = ["//visibility:public"],
+)
+
+rt_py_library(
+    name = "drake_gym",
+    srcs = ["drake_gym.py"],
+    imports = [".."],
+    visibility = ["//visibility:public"],
+)
+
+rt_py_library(
+    name = "mustard_depth_camera_example",
+    srcs = ["mustard_depth_camera_example.py"],
+    imports = [".."],
+    visibility = ["//visibility:public"],
+    deps = [
+      "open3d_utils",
+      "scenarios",
+    ],
+)
+
+rt_py_library(
+    name = "open3d_utils",
+    srcs = ["open3d_utils.py"],
+    imports = [".."],
+    visibility = ["//visibility:public"],
+)
+
+rt_py_library(
+    name = "scenarios",
+    data = ["//manipulation/models"],
+    srcs = ["scenarios.py"],
+    imports = [".."],
+    visibility = ["//visibility:public"],
+)
+
+rt_py_test(
+    name = "test_gym",
+    srcs = ["test/test_gym.py"],
+    imports = [".."],
+    deps = [
+      "drake_gym",
+      "manipulation",
+      "scenarios",
+    ],
+)
+
+rt_py_test(
+    name = "test_meshcat_utils",
+    srcs = ["test/test_meshcat_utils.py"],
+    tags = ["requires-network"], # For gurobi
+    imports = [".."],
+    deps = ["manipulation"],
+)
+
+rt_py_test(
+    name = "test_model_directives",
+    srcs = ["test/test_model_directives.py"],
+    data = ["//manipulation:models"],
+    imports = [".."],
+    deps = ["manipulation"],
+)
+
+rt_py_test(
+    name = "test_open3d_utils",
+    srcs = ["test/test_open3d_utils.py"],
+    data = ["//manipulation:models"],
+    imports = [".."],
+    # Open3D 0.10 is not compatible with Python 3.9.
+    target_compatible_with = [
+        "@platforms//cpu:x86_64",
+        "@platforms//os:linux",
+    ],
+    deps = [
+        "manipulation",
+        "mustard_depth_camera_example",
+        "open3d_utils",
+    ],
+)
+
+rt_py_test(
+    name = "test_utils",
+    srcs = ["test/test_utils.py"],
+    imports = [".."],
+    deps = [
+      "manipulation",
+      "mustard_depth_camera_example",
+    ],
+)
+
+
